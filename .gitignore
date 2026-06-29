@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+
+# Flask
+instance/
+.env
+
+# Uploads
+uploads/
+
+# FastQ
+*.fastq
+*.fq
+*.fastq.gz
+
+# BAM
+*.bam
+*.bai
+
+# SAM
+*.sam
+
+# VCF
+*.vcf
+*.vcf.gz
+*.idx
+
+# Reports
+*.html
+*.json
+
+# Metrics
+metrics.txt
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
