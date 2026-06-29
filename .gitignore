@@ -27,8 +27,8 @@ uploads/
 *.idx
 
 # Reports
-*.html
-*.json
+#*.html
+#*.json
 
 # Metrics
 metrics.txt
