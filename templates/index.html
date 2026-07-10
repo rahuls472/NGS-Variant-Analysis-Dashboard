@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GenomicInsight</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root{
+            --ink:#0B1220;
+            --ink-soft:#1B2740;
+            --paper:#F3F5F8;
+            --card:#FFFFFF;
+            --line:#E2E7EF;
+            --muted:#5B6B85;
+            --accent:#0E7C86;      /* teal — primary instrument accent */
+            --accent-dark:#0A5E66;
+            --base-a:#2E9E5B;      /* nucleotide A */
+            --base-t:#D9483C;      /* nucleotide T */
+            --base-c:#2B6CB0;      /* nucleotide C */
+            --base-g:#C7891E;      /* nucleotide G */
+            --focus:#0E7C86;
+        }
+
+        *{ box-sizing:border-box; }
+
+        body{
+            margin:0;
+            background:var(--paper);
+            font-family:'Inter',sans-serif;
+            color:var(--ink);
+            min-height:100vh;
+        }
+
+        a{ color:inherit; }
+
+        /* ---------- top bar ---------- */
+
+        .topbar{
+            background:var(--ink);
+            color:#EAF2F4;
+            padding:18px 0;
+        }
+
+        .topbar-inner{
+            max-width:1080px;
+            margin:0 auto;
+            padding:0 24px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+
+        .logo{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            font-family:'Manrope',sans-serif;
+            font-weight:800;
+            font-size:1.15rem;
+            letter-spacing:.01em;
+        }
+
+        .logo-mark{
+            width:34px;
+            height:34px;
+            border-radius:9px;
+            background:linear-gradient(135deg,var(--accent),var(--base-c));
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:18px;
+        }
+
+        .build-tag{
+            font-family:'IBM Plex Mono',monospace;
+            font-size:.72rem;
+            color:#9AB0B4;
+            letter-spacing:.06em;
+            text-transform:uppercase;
+        }
+
+        /* ---------- hero ---------- */
+
+        .hero{
+            max-width:1080px;
+            margin:0 auto;
+            padding:56px 24px 28px;
+        }
+
+        .eyebrow{
+            font-family:'IBM Plex Mono',monospace;
+            font-size:.78rem;
+            letter-spacing:.12em;
+            text-transform:uppercase;
+            color:var(--accent-dark);
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-bottom:14px;
+        }
+
+        .eyebrow::before{
+            content:"";
+            width:22px;
+            height:2px;
+            background:var(--accent);
+            display:inline-block;
+        }
+
+        .hero h1{
+            font-family:'Manrope',sans-serif;
+            font-size:2.6rem;
+            font-weight:800;
+            letter-spacing:-.02em;
+            margin:0 0 12px;
+            max-width:14ch;
+        }
+
+        .hero p{
+            color:var(--muted);
+            font-size:1.05rem;
+            max-width:52ch;
+            line-height:1.6;
+            margin:0;
+        }
+
+        /* ---------- pipeline rail (signature element) ---------- */
+
+        .rail-wrap{
+            max-width:1080px;
+            margin:0 auto;
+            padding:8px 24px 44px;
+        }
+
+        .rail{
+            position:relative;
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:0;
+            background:var(--ink);
+            border-radius:16px;
+            padding:22px 18px 18px;
+            overflow:hidden;
+        }
+
+        .rail::before{
+            content:"";
+            position:absolute;
+            top:44px;
+            left:60px;
+            right:60px;
+            height:2px;
+            background:repeating-linear-gradient(90deg,#33465F 0,#33465F 6px,transparent 6px,transparent 12px);
+        }
+
+        .rail-step{
+            position:relative;
+            text-align:center;
+            padding:0 8px;
+        }
+
+        .rail-node{
+            width:34px;
+            height:34px;
+            border-radius:50%;
+            margin:0 auto 12px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-family:'IBM Plex Mono',monospace;
+            font-size:.72rem;
+            font-weight:600;
+            color:#0B1220;
+            position:relative;
+            z-index:1;
+            border:3px solid var(--ink);
+        }
+
+        .rail-step:nth-child(1) .rail-node{ background:var(--base-a); }
+        .rail-step:nth-child(2) .rail-node{ background:var(--base-c); }
+        .rail-step:nth-child(3) .rail-node{ background:var(--base-g); }
+        .rail-step:nth-child(4) .rail-node{ background:var(--base-t); }
+
+        .rail-step h5{
+            color:#F1F5F8;
+            font-family:'Manrope',sans-serif;
+            font-size:.92rem;
+            font-weight:700;
+            margin:0 0 4px;
+        }
+
+        .rail-step small{
+            color:#8CA0AD;
+            font-family:'IBM Plex Mono',monospace;
+            font-size:.68rem;
+            letter-spacing:.02em;
+        }
+
+        /* ---------- main card / form ---------- */
+
+        .content{
+            max-width:1080px;
+            margin:0 auto;
+            padding:0 24px 72px;
+        }
+
+        .main-card{
+            background:var(--card);
+            border:1px solid var(--line);
+            border-radius:18px;
+            padding:38px;
+            box-shadow:0 1px 2px rgba(11,18,32,.04);
+        }
+
+        .card-heading{
+            display:flex;
+            align-items:baseline;
+            justify-content:space-between;
+            margin-bottom:26px;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+
+        .card-heading h2{
+            font-family:'Manrope',sans-serif;
+            font-size:1.3rem;
+            font-weight:700;
+            margin:0;
+        }
+
+        .card-heading span{
+            font-family:'IBM Plex Mono',monospace;
+            font-size:.75rem;
+            color:var(--muted);
+        }
+
+        .field-label{
+            font-family:'Manrope',sans-serif;
+            font-weight:700;
+            font-size:.86rem;
+            color:var(--ink);
+            display:block;
+            margin-bottom:8px;
+        }
+
+        .field-label .req{
+            color:var(--base-t);
+            font-weight:600;
+        }
+
+        select.form-control{
+            width:100%;
+            padding:13px 14px;
+            border-radius:10px;
+            border:1.5px solid var(--line);
+            background:var(--paper);
+            font-family:'Inter',sans-serif;
+            font-size:.95rem;
+            color:var(--ink);
+            appearance:none;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235B6B85' stroke-width='1.6' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;
+            background-position:right 16px center;
+        }
+
+        select.form-control:focus{
+            outline:none;
+            border-color:var(--focus);
+            box-shadow:0 0 0 3px rgba(14,124,134,.14);
+        }
+
+        .row-2{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:20px;
+            margin-top:26px;
+        }
+
+        @media (max-width:680px){
+            .row-2{ grid-template-columns:1fr; }
+            .rail{ grid-template-columns:1fr 1fr; row-gap:22px; }
+            .rail::before{ display:none; }
+            .hero h1{ font-size:2rem; }
+        }
+
+        .upload-box{
+            border:1.5px dashed #C7D1DE;
+            border-radius:14px;
+            padding:24px 20px;
+            text-align:center;
+            background:var(--paper);
+            transition:.2s border-color, .2s background;
+        }
+
+        .upload-box:hover,
+        .upload-box:focus-within{
+            border-color:var(--accent);
+            background:#EAF5F6;
+        }
+
+        .upload-box .tag{
+            display:inline-block;
+            font-family:'IBM Plex Mono',monospace;
+            font-size:.68rem;
+            letter-spacing:.06em;
+            color:#fff;
+            background:var(--ink-soft);
+            padding:3px 9px;
+            border-radius:5px;
+            margin-bottom:10px;
+        }
+
+        .upload-box h5{
+            margin:0 0 4px;
+            font-family:'Manrope',sans-serif;
+            font-weight:700;
+            font-size:.98rem;
+        }
+
+        .upload-box .hint{
+            font-family:'IBM Plex Mono',monospace;
+            font-size:.72rem;
+            color:var(--muted);
+            margin-bottom:14px;
+            display:block;
+        }
+
+        input[type=file]{
+            width:100%;
+            font-family:'Inter',sans-serif;
+            font-size:.85rem;
+        }
+
+        input[type=file]::file-selector-button{
+            font-family:'Manrope',sans-serif;
+            font-weight:600;
+            font-size:.82rem;
+            padding:8px 14px;
+            border-radius:8px;
+            border:1px solid var(--line);
+            background:#fff;
+            color:var(--ink);
+            margin-right:10px;
+            cursor:pointer;
+        }
+
+        input[type=file]::file-selector-button:hover{
+            border-color:var(--accent);
+        }
+
+        .btn-run{
+            width:100%;
+            background:var(--accent);
+            border:none;
+            color:#fff;
+            border-radius:12px;
+            padding:16px;
+            font-family:'Manrope',sans-serif;
+            font-size:1rem;
+            font-weight:700;
+            letter-spacing:.01em;
+            margin-top:30px;
+            cursor:pointer;
+            transition:.15s background;
+        }
+
+        .btn-run:hover{ background:var(--accent-dark); }
+
+        .btn-run:focus-visible{
+            outline:3px solid #9FD8DC;
+            outline-offset:2px;
+        }
+
+        .btn-run .arrow{
+            font-family:'IBM Plex Mono',monospace;
+            margin-left:6px;
+        }
+
+        .footnote{
+            text-align:center;
+            font-family:'IBM Plex Mono',monospace;
+            font-size:.72rem;
+            color:var(--muted);
+            margin-top:18px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <div class="logo">
+            <span class="logo-mark">🧬</span>
+            GenomicInsight
+        </div>
+        <div class="build-tag">NGS Pipeline · v2.1</div>
+    </div>
+</div>
+
+<div class="hero">
+    <div class="eyebrow">Variant calling, start to finish</div>
+    <h1>Raw reads in. Called variants out.</h1>
+    <p>
+        Upload a paired-end FASTQ run and a reference organism —
+        GenomicInsight handles trimming, alignment, BAM processing,
+        and variant calling in one pass.
+    </p>
+</div>
+
+<div class="rail-wrap">
+    <div class="rail">
+
+        <div class="rail-step">
+            <div class="rail-node">01</div>
+            <h5>FastP</h5>
+            <small>QC &amp; TRIM</small>
+        </div>
+
+        <div class="rail-step">
+            <div class="rail-node">02</div>
+            <h5>BWA MEM</h5>
+            <small>ALIGNMENT</small>
+        </div>
+
+        <div class="rail-step">
+            <div class="rail-node">03</div>
+            <h5>SAMtools</h5>
+            <small>BAM PROCESS</small>
+        </div>
+
+        <div class="rail-step">
+            <div class="rail-node">04</div>
+            <h5>GATK</h5>
+            <small>VARIANT CALL</small>
+        </div>
+
+    </div>
+</div>
+
+<div class="content">
+
+    <div class="main-card">
+
+        <form
+            action="{{ url_for('run_pipeline') }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            <div class="card-heading">
+                <h2>New pipeline run</h2>
+                <span>ESTIMATED RUNTIME · 12–25 MIN</span>
+            </div>
+
+            <div>
+                <label class="field-label">
+                    Reference genome <span class="req">*</span>
+                </label>
+
+                <select
+                    class="form-control"
+                    name="organism"
+                    required
+                >
+                    <option value="">Choose reference genome</option>
+                    <option value="ecoli">Escherichia coli</option>
+                    <option value="sarscov2">SARS-CoV-2</option>
+                </select>
+            </div>
+
+            <div class="row-2">
+
+                <div>
+                    <div class="upload-box">
+                        <span class="tag">MATE 1</span>
+                        <h5>FASTQ R1</h5>
+                        <span class="hint">.fastq · .fastq.gz</span>
+                        <input
+                            type="file"
+                            class="form-control"
+                            name="fastq1"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <div class="upload-box">
+                        <span class="tag">MATE 2</span>
+                        <h5>FASTQ R2</h5>
+                        <span class="hint">.fastq · .fastq.gz</span>
+                        <input
+                            type="file"
+                            class="form-control"
+                            name="fastq2"
+                            required
+                        >
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="btn-run" type="submit">
+                Run variant calling pipeline <span class="arrow">→</span>
+            </button>
+
+        </form>
+
+        <div class="footnote">
+            FASTP → BWA MEM → SAMTOOLS → GATK
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
